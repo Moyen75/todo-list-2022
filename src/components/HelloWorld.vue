@@ -1,58 +1,111 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <div class="main">
+      <div class="top">
+        <h1>My Tasks</h1>
+        <AddTask
+          @show-tasks="showTask"
+          :title="showTaskForm ? 'Close' : 'Add Task'"
+          :color="showTaskForm ? 'red' : 'green'"
+        />
+      </div>
+      <div class="task-form">
+        <AddTaskForm v-if="showTaskForm" @add-task="addTask" />
+      </div>
+      <div>
+        <AllTasks
+          @delete-task="deleteTask"
+          @show-reminder="showReminder"
+          :tasks="tasks"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import AllTasks from "./AllTasks.vue";
+import AddTask from "./AddTask.vue";
+import AddTaskForm from "./AddTaskForm.vue";
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "HelloWorld",
+  components: {
+    AddTask,
+    AddTaskForm,
+    AllTasks,
+  },
+  data() {
+    return {
+      tasks: [],
+      showTaskForm: false,
+    };
+  },
+  methods: {
+    addTask(task) {
+      this.tasks = [...this.tasks, task];
+    },
+    showTask() {
+      this.showTaskForm = !this.showTaskForm;
+    },
+    async deleteTask(id) {
+      const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: "DELETE",
+      });
+      res.status === 200
+        ? ((this.tasks = this.tasks.filter((task) => task.id !== id)),
+          this.$swal.fire("Good job!", "Task deleted successfully!", "success"))
+        : this.$swal.fire("ooops!", "something error!", "error");
+    },
+    async showReminder(id) {
+      const fetchOne = async (id) => {
+        const res = await fetch(`http://localhost:3000/tasks/${id}`);
+        const data = await res.json();
+        return data;
+      };
+      const currentData = await fetchOne(id);
+      const toggleReminder = {
+        ...currentData,
+        reminder: !currentData.reminder,
+      };
+      const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(toggleReminder),
+      });
+      res.status === 200
+        ? ((this.tasks = this.tasks.map((task) =>
+            task.id === id ? { ...task, reminder: !task.reminder } : task
+          )),
+          this.$swal.fire("Good job!", "Task updated successfully!", "success"))
+        : this.$swal.fire("ooops!", "something error!", "error");
+    },
+  },
+  async created() {
+    const res = await fetch("http://localhost:3000/tasks");
+    const data = await res.json();
+    this.tasks = data;
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+.hello {
+  width: 100%;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
+.main {
+  width: 400px;
+  border: 2px solid rgba(128, 128, 128, 0.333);
+  margin: 0 auto;
+  padding: 5px 10px;
+  background-color: #c6e5e1;
+  border-radius: 3px;
 }
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 </style>
