@@ -48,7 +48,7 @@ export default {
       this.showTaskForm = !this.showTaskForm;
     },
     async deleteTask(id) {
-      const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+      const res = await fetch(`http://localhost:5001/api/v1/taskDelete/${id}`, {
         method: "DELETE",
       });
       res.status === 200
@@ -58,16 +58,16 @@ export default {
     },
     async showReminder(id) {
       const fetchOne = async (id) => {
-        const res = await fetch(`http://localhost:3000/tasks/${id}`);
+        const res = await fetch(`http://localhost:5001/api/v1/singleTask/${id}`);
         const data = await res.json();
-        return data;
+        return data.task;
       };
       const currentData = await fetchOne(id);
       const toggleReminder = {
         ...currentData,
         reminder: !currentData.reminder,
       };
-      const res = await fetch(`http://localhost:3000/tasks/${id}`, {
+      const res = await fetch(`http://localhost:5001/api/v1/taskUpdate/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
@@ -83,9 +83,9 @@ export default {
     },
   },
   async created() {
-    const res = await fetch("http://localhost:3000/tasks");
-    const data = await res.json();
-    this.tasks = data;
+    const res = await fetch("http://localhost:5001/api/v1/tasks");
+    const {tasks} = await res.json();
+    this.tasks = tasks;
   },
 };
 </script>
@@ -96,9 +96,9 @@ export default {
   width: 100%;
 }
 .main {
-  width: 400px;
+  width: 600px;
   border: 2px solid rgba(128, 128, 128, 0.333);
-  margin: 0 auto;
+  margin: 50px auto;
   padding: 5px 10px;
   background-color: #c6e5e1;
   border-radius: 3px;

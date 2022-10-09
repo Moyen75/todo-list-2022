@@ -1,6 +1,6 @@
 <template>
-  <div :key="task.id" v-for="task of tasks">
-    <SingleTask
+  <div :key="task.id" v-for="task in tasks">
+    <SingleTask v-if="task"
       @delete-task="$emit('delete-task', task.id)"
       @show-reminder="$emit('show-reminder', task.id)"
       :task="task"
