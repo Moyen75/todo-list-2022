@@ -48,7 +48,7 @@ export default {
       this.showTaskForm = !this.showTaskForm;
     },
     async deleteTask(id) {
-      const res = await fetch(`http://localhost:5001/api/v1/taskDelete/${id}`, {
+      const res = await fetch(`https://wild-pink-pleat.cyclic.app/api/v1/taskDelete/${id}`, {
         method: "DELETE",
       });
       res.status === 200
@@ -57,22 +57,8 @@ export default {
         : this.$swal.fire("ooops!", "something error!", "error");
     },
     async showReminder(id) {
-      const fetchOne = async (id) => {
-        const res = await fetch(`http://localhost:5001/api/v1/singleTask/${id}`);
-        const data = await res.json();
-        return data.task;
-      };
-      const currentData = await fetchOne(id);
-      const toggleReminder = {
-        ...currentData,
-        reminder: !currentData.reminder,
-      };
-      const res = await fetch(`http://localhost:5001/api/v1/taskUpdate/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(toggleReminder),
+      const res = await fetch(`https://wild-pink-pleat.cyclic.app/api/v1/taskUpdate/${id}`, {
+        method: "PUT"
       });
       res.status === 200
         ? ((this.tasks = this.tasks.map((task) =>
@@ -83,7 +69,7 @@ export default {
     },
   },
   async created() {
-    const res = await fetch("http://localhost:5001/api/v1/tasks");
+    const res = await fetch("https://wild-pink-pleat.cyclic.app/api/v1/tasks");
     const {tasks} = await res.json();
     this.tasks = tasks;
   },
