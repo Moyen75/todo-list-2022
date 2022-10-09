@@ -1,13 +1,13 @@
 <template>
-  <div class="task" @dblclick="$emit('show-reminder', task.id)">
+  <div class="task" @dblclick="$emit('show-reminder', singelTask.id)">
     <h1>
-      {{ task.task }}
-      <i v-if="task.task" @click="onDelete(task.id)" class="fa-solid fa-trash-can"></i>
+      {{ singelTask?.task }}
+      <i v-if="singelTask.task" @click="onDelete(singelTask.id)" class="fa-solid fa-trash-can"></i>
     </h1>
     <div class="reminder">
-      <h3>{{ task.date }}</h3>
-      <h3>{{ task.time }}</h3>
-      <i :class="[task.reminder ? 'fa-solid fa-bell' : '']"></i>
+      <h3>{{ singelTask.date }}</h3>
+      <h3>{{ singelTask.time }}</h3>
+      <i :class="[singelTask.reminder ? 'fa-solid fa-bell' : '']"></i>
     </div>
   </div>
 </template>
@@ -15,7 +15,7 @@
 export default {
   name: "SingleTask",
   props: {
-    task: Object,
+    singelTask: Object,
   },
   methods: {
     onDelete(id) {

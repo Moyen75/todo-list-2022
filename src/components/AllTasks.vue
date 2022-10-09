@@ -3,7 +3,7 @@
     <SingleTask v-if="task"
       @delete-task="$emit('delete-task', task.id)"
       @show-reminder="$emit('show-reminder', task.id)"
-      :task="task"
+      :singelTask="task"
     />
   </div>
 </template>

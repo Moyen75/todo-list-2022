@@ -86,5 +86,6 @@ label {
   font-weight: 700;
   padding: 8px;
   color: white;
+  cursor: pointer;
 }
 </style>
