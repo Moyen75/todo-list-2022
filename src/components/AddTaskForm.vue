@@ -38,7 +38,7 @@ export default {
       };
       if (!this.task && !this.date && !this.time)
         return alert("something missing!");
-      const res = await fetch("http://localhost:5001/api/v1/tasks", {
+      const res = await fetch("https://wild-pink-pleat.cyclic.app/api/v1/tasks", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
